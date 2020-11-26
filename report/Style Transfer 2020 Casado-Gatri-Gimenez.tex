@@ -43,135 +43,32 @@ Abstract
 \vfill
 
 \section{Introduction}
+\subsection{Style transfer}
+What is style transfer
 
-\section{Background Research}
-\subsection{A Brief Introduction To The Artificial Neural Network}
-\textbf{Artificial Neural Networks (ANNs)} are computational systems loosely modelled after the networks of neurons in the animal brain. Their versatility and ability to solve problems not easily able to be expressed algorithmically comes from the \textbf{fundamentally} different way they approach problems. Examples of these problems include, but are not limited to
-\begin{itemize}
-    \item Image Recognition and Classification
-    \item Function Modelling and Curve Fitting
-    \item Image Restoration
-    \item Language Translation
-    \item Voice Synthesis and Recognition
-\end{itemize}
-
-A notable similarity among these five problems is that they are all non-trivial pattern recognition problems. In this project we investigate Artificial Neural Networks as they relate to the preantepenultimate point on this list, Function Modelling and Curve Fitting.
-
-\subsection{Artificial Neurons}
-An Artificial Neural Network is simply a network of \textbf{artificial neurons}, divided into various \textbf{layers}.
-There are two major types of neurons: \textbf{perceptrons} and \textbf{sigmoid neurons}.
-
-\subsubsection{Perceptrons}
-Perceptrons are the simplest types of neurons, they receive binary inputs and produce a binary output. To compute this output we introduce \textbf{weights}, real numbers signifying the strength of the effect of a particular input on the perceptron's output.
-
-
-The output, or \textbf{activation}, of a perceptron is determined by whether the value of the \textbf{weighted sum} $\sum_{i=1}^{n}{x_{i}w_{i}}$ is greater than some \textbf{threshold} value. More explicitly,
-
-\begin{equation}
-\text{Output} =
-\begin{cases} 
-    0 \ \ \ \text{if} & \sum_{i=1}^{n}{x_{i}w_{i}} \le \text{threshold} \\
-    1 \ \ \ \text{if} & \sum_{i=1}^{n}{x_{i}w_{i}} > \text{threshold}
-\end{cases}
-\end{equation}
-
-To make the notation less cumbersome, let $x$ and $w$ be the vectors of inputs and their corresponding weights, respectively and define a \textbf{bias} value $b=-\text{threshold}$. Then we get
-
-\begin{equation}
-\text{Output} =
-\begin{cases} 
-    0 \ \ \ \text{if} & w \cdot x + b \le 0 \\
-    1 \ \ \ \text{if} & w \cdot x + b > 0
-\end{cases}
-\end{equation}
-
-\subsubsection{Sigmoid Neurons}
-
-For our network to be able to learn in a predictable manner, we need the output(s) of the networks to be continuous functions of the input(s), however this is not the case with the perceptron model. Hence, we introduce a new type of neuron, the sigmoid neuron.
-
-Sigmoid neurons function exactly the same as perceptrons, except the activation of the sigmoid neuron is not a piecewise function, it's rather defined by $\sigma(w \cdot x + b)$, where $w$ and $x$ are the vectors of the inputs and their corresponding outputs respectively, $b$ is the bias, and $\sigma(z)$ (the sigmoid function) is defined as
-
-\begin{equation}
-    \sigma(z)=\frac{1}{1+e^{-z}}    
-\end{equation}
+\section{Theoretical Background}
 
 \subsection{Artificial Neural Network Architecture}
-Artificial Neural Networks are divided in layers, with an arbitrary number of neurons in each layer. The first and last layers are the input and output layer respectively, and all layers in between are called \textbf{hidden layers}.
-
-It is evident that the outputs from layer $l$ are the inputs to layer $l+1$. This repeated process of taking the outputs from one layer and inputting them to the next is called \textbf{forward-propagation}. Neural networks requiring only a forward-propagation system to find the output are called \textbf{feed-forward} neural networks.
-
-When numbers are inputted to the network, they're multiplied by their corresponding weights and inputted to the neurons of the second layer. The weighted sum of each of the neurons is then added to their bias and put into the sigmoid activation function. These values are now multiplied by the weights of the connections between the second and third layers and the process is repeated until the last layer.
-
-If we let
-
-\begin{itemize}
-    \item $a_{j}^{l}$ denote the activation of the $j$th neuron in layer $l$
-    \item $w_{j, k}^{l}$ denote the value of the weight connecting the $j$th neuron in layer $l$ and the $k$th neuron in layer $l-1$
-    \item $b_{j}^{l}$ denote the bias of the $j$th neuron in layer $l$
-    \item $n_{l}$ denote the number of neurons in layer $l$
-\end{itemize}
-
-We can define a universal equation to find the activation of any neuron in our network
-
-\large
-\begin{equation}
-    a_{j}^{l}=\sigma\left(\left[\sum_{k=1}^{n_{l-1}}{w_{j, k}^{l}a_{k}^{l-1}}\right]+b_{j}^{l}\right)
-\end{equation}
-\normalsize
+What is VGG19
 
 \subsection{Training An Artificial Neural Network}
-The training process of an ANN is highly variable when it comes to the specifics, but the general structure is the following
-\begin{enumerate}
-    \item Define a cost function (also error, loss, or objective function) of the network's parameters
-    \item Initialize the network with random parameters
-    \item Iterate a series of steps which changes the network parameters in such a way as to decrease the cost function
-\end{enumerate}
+How do we train new styles?
 
-\subsubsection{The Mean-Squared-Error Cost Function}
+\subsubsection{Cost function}
+Which cost function do we choose and why?
 
-To be able to train our network we must define a \textbf{cost function} (or \textbf{error function}), 
-showing how well our network is performing. This function takes in the parameters (weights and biases) of the network and a set of \textbf{training data}, which is data from which our network must 'learn', or to be less ambiguous, it is the data from which our network must generalize. In short, it is, quite literally, the training data. One such cost function is the \textbf{Mean-Squared-Error (MSE)} cost
-function, or quadratic cost function. The MSE cost function is defined as
-
-\large
-\begin{equation}
-    C(w, b) :\propto \sum_{x}{||y(x)-a^{L}(x)||^2}
-\end{equation}
-\normalsize
-
-where we write the desired output and actual output of the network as $y(x)$ and $a^{L}(x)$, respectively, as they are functions of the inputs, $x$. Usually the constant of proportionality is $1/2n$ but it does not matter as much as the general form of the equation. The MSE cost function is a good way of determining the error of a network as it gives a high value when even a single desired output is not close to the actual output since the raw difference is squared, and when the two outputs are close together, the raw difference (which is small) is squared to become even smaller, so that point is then basically ignored.
-
-\subsection{Engineering Goal}
-The main purpose of this project is to demonstrate the effectiveness of Artificial Neural Networks as a curve fitting model, and in particular, display its superiority over traditional methods such as polynomial regression.
-
-There are three major criteria for this ANN model to satisfy:
-
-\begin{enumerate}
-    \item Very High Scalability
-    \item Good Flexibility Between Accuracy and Speed
-    \item Insensitivity to Noise (An Avoidance of Overfitting)
-\end{enumerate}
-
-Immediately from our preliminary research we can see that ANNs possess inherent properties which resolve much of the design criteria.
-
-\begin{enumerate}
-    \item The issue of scalability is very easily avoided just by considering the structure of neural nets. If we want to curve fit a function $f: \mathbb{R}^n \rightarrow \mathbb{R}^k$ then we simply construct a network with $n$ neurons in the input layer and $k$ neurons in the output layer and train it with training data.
-    \item Since ANNs train by an iterative process, there is a clear speed-accuracy trade-off, and thus training can be stopped at an arbitrary point in time to sacrifice accuracy for speed or vice versa. This ensures that a researcher can perform a quick approximation of lengthy analysis of any dataset.
-    \item There exist regularization methods to lower the responsiveness of the training algorithm to random noise in the training data, hence decreasing the effects of overfitting.
-\end{enumerate}
+\subsection{Purpose of the work (Engineering Goal?)}
 
 \subsection{Virtual Materials}
-
 There were no physical materials in this project, but a multitude of virtual materials were used, which include
 
 \begin{itemize}
     \item Python 3.7.0 programming software
-    \item Numpy Library for fast linear algebra
-    \item Matplotlib library for easy graphing
-    \item Sci-kit learn library for neural network construction
 \end{itemize}
 
-\subsection{Procedure}
+\section{Method}
+
+\subsection{Implementation}
 There were three programs developed during the duration of this project, which were for the purposes of 
 \begin{itemize}
     \item Data Collection for the ANN model
@@ -198,24 +95,11 @@ There were three programs developed during the duration of this project, which w
     \item Perform one repetition of steps 1-7 for each $k \in \{1, 2, 3, ..., 10\}$
     \item Summarize resulting data (take averages)
 \end{enumerate}
-\subsection{Major Documentation Of Progress}
-
-There emerged 4 major versions of the ANN program out of the continuous process of testing and bettering the design. Below is a comprehensive list of the version name and the changes associated with it.
-
-\begin{itemize}
-    \item Version 1 - Basic ANN Mechanics: Training and numerical output of ANN based on input after training.
-    \item Version 2 - Introduction of Polynomial Regression: Polynomials as a comparison benchmark and graphing of predictions after training
-    \item Version 3 - Epoch Checking: An acceptable accuracy level is set and after each epoch of training, the ANN model's accuracy is compared to the acceptable accuracy. If it is greater, then training terminates.
-    \item Version 4 - Update of Accuracy Algorithms: Percent accuracy is introduced and the MSE is updated to be faster
-    \item Version 5 - Learning Rate Decay: This is the latest update and has not been tested yet. The main addition is the incorporation of a system that stores the parameters of the ANN of the previous epoch, so that if accuracy decreases between two epochs, the code reverts back to the older parametric settings, redefines the learning rate as 2/3 of itself, and continues training. This allows for the existence of learning rate decay without another hyperparameter.
-\end{itemize}
-
-A much more inclusive documentation can be found in the project written logbook.
 
 \section{Data}
 The cumulative data acquired can be summarized with the following graphs:
 
-\section{Conclusion}
+\section{Results}
 \subsection{General Project Conclusions}
 
 In this project the plausibility of using Artificial Neural Networks (ANNs) as a regression model was tested. It was found that three-layer ANNs usually took longer than polynomial regression and had roughly similar accuracy, however, their rate of overfitting was incredibly lower and their usability was remarkably higher than polynomials. It was also observed that they were much less reliant on initial conditions, unlike polynomials which were very sensitive to their degree, and for this reason, ANNs are so much more resilient than their ANN counterparts.
