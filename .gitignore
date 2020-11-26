@@ -1,3 +1,14 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.upa
+*.upb
+*.dvi
+*.tex.bak
+
+.devcontainer
 .vscode
 
 # Byte-compiled / optimized / DLL files
