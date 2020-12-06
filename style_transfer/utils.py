@@ -4,16 +4,22 @@ mpl.rcParams['figure.figsize'] = (10,10)
 mpl.rcParams['axes.grid'] = False
 
 import numpy as np
+
 from PIL import Image
+from typing import Union
+from pathlib import Path
 from tensorflow.python.keras.preprocessing import image as kp_image
 from tensorflow.keras.applications.vgg19 import preprocess_input
 
 def load_img(path_to_img):
     max_dim = 512
     img = Image.open(path_to_img)
-    long = max(img.size)
-    scale = max_dim/long
-    img = img.resize((round(img.size[0]*scale), round(img.size[1]*scale)), Image.ANTIALIAS)
+    long_ = max(img.size)
+    scale = max_dim/long_
+    img = img.resize(
+        (round(img.size[0]*scale), round(img.size[1]*scale)), 
+        Image.ANTIALIAS
+        )
     
     img = kp_image.img_to_array(img)
     
@@ -87,3 +93,11 @@ def deprocess_img(processed_img):
 
     x = np.clip(x, 0, 255).astype('uint8')
     return x
+
+def save_img(
+    img_array, run_id: str, iteration: int, folder: Union[str,Path], 
+    error: bool = False
+    ):
+    Image.fromarray(img_array).save(
+        Path(folder,f'{"ERROR_" if error else ""}{run_id}_{iteration}.png')
+        )

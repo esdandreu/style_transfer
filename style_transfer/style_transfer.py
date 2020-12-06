@@ -1,27 +1,43 @@
 import time
-import IPython.display
+import logging
 
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
 from PIL import Image
+from pathlib import Path
 
 from style_transfer.model import get_model
 from style_transfer.loss import gram_matrix, compute_grads
 from style_transfer.utils import (
-    get_feature_representations, load_and_process_img, deprocess_img
+    get_feature_representations, load_and_process_img, deprocess_img, save_img
+    )
+from style_transfer.config import (
+    OUTPUT_FOLDER, STYLE_FOLDER, CONTENT_FOLDER, CHECKPOINTS_PER_RUN
     )
 
+logger = logging.getLogger(__name__)
+
 def run_style_transfer(
-    content_path, 
-    style_path,
+    content_name: str, 
+    style_name: str,
     num_iterations: int = 1000,
+    output_folder: Path = OUTPUT_FOLDER,
     content_weight: float = 1e3, 
     style_weight: float = 1e-2
     ): 
-    # We don't need to (or want to) train any layers of our model, so we set their
-    # trainable to false. 
+
+    # Get path from content_name
+    # TODO solve the formats problem (get name from path instead of the other way)
+    content_path = Path(CONTENT_FOLDER, f'{content_name}.jpg')
+    style_path = Path(STYLE_FOLDER, f'{style_name}.jpg')
+
+    # Image and stats identifier form input parameters
+    run_id = f'{content_name}_{style_name}'
+
+    # We don't need to (or want to) train any layers of our model, so we set
+    # their trainable to false. 
     model = get_model() 
     for layer in model.layers:
         layer.trainable = False
@@ -39,66 +55,60 @@ def run_style_transfer(
     init_image = load_and_process_img(content_path)
     init_image = tf.Variable(init_image, dtype=tf.float32)
     # Create our optimizer
+    # TODO play with optimizer? 
     opt = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
 
     # Store our best result
     best_loss, best_img = float('inf'), None
     
-    # Create a nice config 
+    # Argument for computing the gradients
     loss_weights = (style_weight, content_weight)
-    cfg = {
-        'model': model,
-        'loss_weights': loss_weights,
-        'init_image': init_image,
-        'gram_style_features': gram_style_features,
-        'content_features': content_features
-    }
         
-    # For displaying
-    num_rows = 2
-    num_cols = 5
-    display_interval = num_iterations/(num_rows*num_cols)
-    start_time = time.time()
-    global_start = time.time()
-    
+    # ? What is this
     norm_means = np.array([103.939, 116.779, 123.68])
     min_vals = -norm_means
     max_vals = 255 - norm_means   
-    
-    imgs = []
-    for i in range(num_iterations):
-        grads, all_loss = compute_grads(cfg)
-        loss, style_score, content_score = all_loss
-        opt.apply_gradients([(grads, init_image)])
-        clipped = tf.clip_by_value(init_image, min_vals, max_vals)
-        init_image.assign(clipped)
-        
-        if loss < best_loss:
-            # Update best loss and best image from total loss. 
-            best_loss = loss
-            best_img = deprocess_img(init_image.numpy())
 
-        if i % display_interval== 0:
-            start_time = time.time()
+    # Interval for checkpoints
+    run_start = time.time()
+    checkpoint_interval = num_iterations/(CHECKPOINTS_PER_RUN)
+
+    # TODO create stats file
+    
+    try: 
+        for i in range(num_iterations):
+            start = time.time()
+            grads, loss, style_score, content_score = compute_grads(
+                model=model,
+                loss_weights=loss_weights,
+                init_image=init_image,
+                gram_style_features=gram_style_features,
+                content_features=content_features
+                )
+            opt.apply_gradients([(grads, init_image)])
+            clipped = tf.clip_by_value(init_image, min_vals, max_vals)
+            init_image.assign(clipped)
+
+            # TODO save iteration loss and process time
+            logger.info(
+                f'Iteration {i}\n{ loss = }\n{ style_score = }'
+                f'\n{ content_score = }\n{ time.time()-run_start = }\n'
+                f'{ time.time()-start = }'
+                )
             
-            # Use the .numpy() method to get the concrete numpy array
-            plot_img = init_image.numpy()
-            plot_img = deprocess_img(plot_img)
-            imgs.append(plot_img)
-            IPython.display.clear_output(wait=True)
-            IPython.display.display_png(Image.fromarray(plot_img))
-            print('Iteration: {}'.format(i))        
-            print('Total loss: {:.4e}, ' 
-                    'style loss: {:.4e}, '
-                    'content loss: {:.4e}, '
-                    'time: {:.4f}s'.format(loss, style_score, content_score, time.time() - start_time))
-    print('Total time: {:.4f}s'.format(time.time() - global_start))
-    IPython.display.clear_output(wait=True)
-    plt.figure(figsize=(14,4))
-    for i,img in enumerate(imgs):
-        plt.subplot(num_rows,num_cols,i+1)
-        plt.imshow(img)
-        plt.xticks([])
-        plt.yticks([])
-        
-    return best_img, best_loss 
+            if loss < best_loss:
+                # Update best loss and best image from total loss. 
+                best_loss = loss
+                best_img = deprocess_img(init_image.numpy())
+            
+            # Save checkpoint image
+            if i % checkpoint_interval == 0:
+                save_img(best_img,run_id,i,output_folder)
+
+    except Exception as e:
+        logger.error(str(e), exc_info=e)
+        save_img(best_img,run_id,i,output_folder,error=True)
+        return False
+    
+    save_img(best_img,run_id,i+1,output_folder)
+    return True

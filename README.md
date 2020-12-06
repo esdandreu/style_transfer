@@ -62,3 +62,8 @@ Below are the commands that should be run in the project folder:
 [vscode]: https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop "Visual Studio Code"
 [tensorflow-tutorial]: https://github.com/tensorflow/models/blob/master/research/nst_blogpost/4_Neural_Style_Transfer_with_Eager_Execution.ipynb "Tensorflow Tutorial"
 [wikimedia]: https://commons.wikimedia.org/wiki/Main_Page "Wikimedia"
+
+## Degrees of freedom
++ Style layers
++ Content layers
++ Iterations
