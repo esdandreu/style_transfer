@@ -16,9 +16,9 @@ from style_transfer.utils import (
 def run_style_transfer(
     content_path, 
     style_path,
-    num_iterations=1000,
-    content_weight=1e3, 
-    style_weight=1e-2
+    num_iterations: int = 1000,
+    content_weight: float = 1e3, 
+    style_weight: float = 1e-2
     ): 
     # We don't need to (or want to) train any layers of our model, so we set their
     # trainable to false. 
@@ -28,8 +28,12 @@ def run_style_transfer(
     
     # Get the style and content feature representations (from our specified
     # intermediate layers) 
-    style_features, content_features = get_feature_representations(model, content_path, style_path)
-    gram_style_features = [gram_matrix(style_feature) for style_feature in style_features]
+    style_features, content_features = get_feature_representations(
+        model, content_path, style_path
+        )
+    gram_style_features = [
+        gram_matrix(style_feature) for style_feature in style_features
+        ]
     
     # Set initial image
     init_image = load_and_process_img(content_path)
