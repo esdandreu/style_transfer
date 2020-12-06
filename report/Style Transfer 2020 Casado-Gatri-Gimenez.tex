@@ -1,3 +1,4 @@
+% !TeX root = ./Style Transfer 2020 Casado-Gatri-Gimenez.tex
 \documentclass{article}
 
 \usepackage{arxiv}
@@ -28,117 +29,119 @@
   \textit{shreyjoshi2004@gmail.com} \\
 }
 
+\date{\today}
+
 \begin{document}
-\maketitle
-\begin{abstract} \normalsize
+    \maketitle
+    \begin{abstract} \normalsize
 
-Abstract
+        Abstract
 
-\end{abstract}
+    \end{abstract}
 
 
-% keywords can be removed
-\keywords{Artificial Neural Network \and Curve Fitting \and Dataset \and Polynomial \and Regression}
-\clearpage
+    % keywords can be removed
+    \keywords{Artificial Neural Network \and Curve Fitting \and Dataset \and Polynomial \and Regression}
+    \clearpage
 
-\tableofcontents
-\clearpage
+    \tableofcontents
+    \clearpage
 
-\section{Introduction}
-\subsection{Style transfer}
-What is style transfer
+    \section{Introduction}
+    \subsection{Style transfer}
+    What is style transfer
 
-\section{Theoretical Background}
+    \section{Theoretical Background}
 
-\subsection{Artificial Neural Network Architecture}
-What is VGG19
+    \subsection{Artificial Neural Network Architecture}
+    What is VGG19
 
-\subsection{Training An Artificial Neural Network}
-How do we train new styles?
+    \subsection{Training An Artificial Neural Network}
+    How do we train new styles?
 
-\subsubsection{Cost function}
-Which cost function do we choose and why?
+    \subsubsection{Cost function}
+    Which cost function do we choose and why?
 
-\subsection{Purpose of the work (Engineering Goal?)}
+    \subsection{Purpose of the work (Engineering Goal?)}
 
-\subsection{Virtual Materials}
-There were no physical materials in this project, but a multitude of virtual materials were used, which include
+    \subsection{Virtual Materials}
+    There were no physical materials in this project, but a multitude of virtual materials were used, which include
 
-\begin{itemize}
-    \item Python 3.7.0 programming software
-\end{itemize}
-
-\section{Method}
-
-\subsection{Implementation}
-There were three programs developed during the duration of this project, which were for the purposes of 
-\begin{itemize}
-    \item Data Collection for the ANN model
-    \item Data Collection for the Polynomial model
-    \item Comparison Program which Graphs and a trained ANN and polynomial along with Training and Test data
-\end{itemize}
-
-\begin{enumerate}
-    \item Construct a three layer ANN of architecture $[1-2k-1]$ with randomly initialized parameters/Select a polynomial order $k$.
-    \item Select a function, $f(x)$ from the above list from which to generate training data
-    \item Construct a new function $g(x) := f(x) + m$ where $m$ denotes a random 10\% error based on the normal distribution
-    \item Generate a training dataset of 15 sample points from $g(x)$
-    \item Train the ANN model/polynomial model with the training dataset
-    \item Once the model has been trained, obtain data on 
     \begin{itemize}
-        \item Time Elapsed Training
-        \item Mean-Squared-Error
-        \item Average Percent Accuracy
-        \item Number of Epochs Elapsed (ANN only)
+        \item Python 3.7.0 programming software
     \end{itemize}
-    where accuracies are measure with respect to the function $f(x)$.
-    \item Save the aforementioned data to an external text file
-    \item Perform 30 repetitions of steps 2-6 for each function
-    \item Perform one repetition of steps 1-7 for each $k \in \{1, 2, 3, ..., 10\}$
-    \item Summarize resulting data (take averages)
-\end{enumerate}
 
-\section{Data}
-The cumulative data acquired can be summarized with the following graphs:
+    \section{Method}
 
-\section{Results}
-\subsection{General Project Conclusions}
+    \subsection{Implementation}
+    There were three programs developed during the duration of this project, which were for the purposes of 
+    \begin{itemize}
+        \item Data Collection for the ANN model
+        \item Data Collection for the Polynomial model
+        \item Comparison Program which Graphs and a trained ANN and polynomial along with Training and Test data
+    \end{itemize}
 
-In this project the plausibility of using Artificial Neural Networks (ANNs) as a regression model was tested. It was found that three-layer ANNs usually took longer than polynomial regression and had roughly similar accuracy, however, their rate of overfitting was incredibly lower and their usability was remarkably higher than polynomials. It was also observed that they were much less reliant on initial conditions, unlike polynomials which were very sensitive to their degree, and for this reason, ANNs are so much more resilient than their ANN counterparts.
-It was observed that in a three layer network, the optimum number of neurons for speed was around 12, and although there was an improvement of accuracy as the number of neurons increased, there was no big improvement after ~14 neurons
-It is theorized that using deeper neural networks will greatly improve performance due to more layers of complexity, allowing the network to model more complicated datasets. This might introduce new problems, however, such as overfitting, but these can be solved with regularization, altering the activation function, and other techniques.
-It is intended to continue development of the ANN model and perform testing on multi-dimensional datasets to investigate its scalability. The full potential of ANNs as a curve fitting model was not revealed, but rather previewed in this project. It is conjectured that it will however be revealed upon further development and testing upon multivariate datasets with deeper networks, as this is where we can no longer apply standard methods with confidence.
+    \begin{enumerate}
+        \item Construct a three layer ANN of architecture $[1-2k-1]$ with randomly initialized parameters/Select a polynomial order $k$.
+        \item Select a function, $f(x)$ from the above list from which to generate training data
+        \item Construct a new function $g(x) := f(x) + m$ where $m$ denotes a random 10\% error based on the normal distribution
+        \item Generate a training dataset of 15 sample points from $g(x)$
+        \item Train the ANN model/polynomial model with the training dataset
+        \item Once the model has been trained, obtain data on 
+        \begin{itemize}
+            \item Time Elapsed Training
+            \item Mean-Squared-Error
+            \item Average Percent Accuracy
+            \item Number of Epochs Elapsed (ANN only)
+        \end{itemize}
+        where accuracies are measure with respect to the function $f(x)$.
+        \item Save the aforementioned data to an external text file
+        \item Perform 30 repetitions of steps 2-6 for each function
+        \item Perform one repetition of steps 1-7 for each $k \in \{1, 2, 3, ..., 10\}$
+        \item Summarize resulting data (take averages)
+    \end{enumerate}
+
+    \section{Data}
+    The cumulative data acquired can be summarized with the following graphs:
+
+    \section{Results}
+    \subsection{General Project Conclusions}
+
+    In this project the plausibility of using Artificial Neural Networks (ANNs) as a regression model was tested. It was found that three-layer ANNs usually took longer than polynomial regression and had roughly similar accuracy, however, their rate of overfitting was incredibly lower and their usability was remarkably higher than polynomials. It was also observed that they were much less reliant on initial conditions, unlike polynomials which were very sensitive to their degree, and for this reason, ANNs are so much more resilient than their ANN counterparts.
+    It was observed that in a three layer network, the optimum number of neurons for speed was around 12, and although there was an improvement of accuracy as the number of neurons increased, there was no big improvement after ~14 neurons
+    It is theorized that using deeper neural networks will greatly improve performance due to more layers of complexity, allowing the network to model more complicated datasets. This might introduce new problems, however, such as overfitting, but these can be solved with regularization, altering the activation function, and other techniques.
+    It is intended to continue development of the ANN model and perform testing on multi-dimensional datasets to investigate its scalability. The full potential of ANNs as a curve fitting model was not revealed, but rather previewed in this project. It is conjectured that it will however be revealed upon further development and testing upon multivariate datasets with deeper networks, as this is where we can no longer apply standard methods with confidence.
 
 
-\subsection{Implications Of Data}
+    \subsection{Implications Of Data}
 
-A Two Sample T-test was conducted on the lists of the different Mean-Squared-Errors for the ANN and polynomial models for each individual class of functions. The average p value over these functional classes was computed to be 0.0370, meaning the data was statistically significant.
+    A Two Sample T-test was conducted on the lists of the different Mean-Squared-Errors for the ANN and polynomial models for each individual class of functions. The average p value over these functional classes was computed to be 0.0370, meaning the data was statistically significant.
 
-The data itself strongly implies a number of results:
+    The data itself strongly implies a number of results:
 
-The pair of activation function and loss minimization method that yielded the highest accuracy (lowest MSE) was hyperbolic tangent + LBFGS.
+    The pair of activation function and loss minimization method that yielded the highest accuracy (lowest MSE) was hyperbolic tangent + LBFGS.
 
-Testing different network architectures with hyperbolic tangent activation function + LBFGS yielded the result that ~17 neurons tended to be optimal for curve fitting 2D datasets around the complexity of those used in this project.
+    Testing different network architectures with hyperbolic tangent activation function + LBFGS yielded the result that ~17 neurons tended to be optimal for curve fitting 2D datasets around the complexity of those used in this project.
 
-From qualitative analysis of the graphs produced comparing the predictions of the models, it was found that ANNs were remarkably better for extrapolation than polynomials.
+    From qualitative analysis of the graphs produced comparing the predictions of the models, it was found that ANNs were remarkably better for extrapolation than polynomials.
 
-It was also seen from qualitative analysis that ANNs succumbed less to overfitting and hence were more usable, even when the number of neurons in the hidden layer was ridiculously large.
+    It was also seen from qualitative analysis that ANNs succumbed less to overfitting and hence were more usable, even when the number of neurons in the hidden layer was ridiculously large.
 
-For these reasons, the researcher concludes that Artificial Neural Networks are superior to polynomials for curve fitting.
+    For these reasons, the researcher concludes that Artificial Neural Networks are superior to polynomials for curve fitting.
 
 
-Unlike the polynomial graphs, there exists variation in the ANN graphs as parameters are initialized randomly (local minima)
+    Unlike the polynomial graphs, there exists variation in the ANN graphs as parameters are initialized randomly (local minima)
 
-\subsection{Real-World Applications}
+    \subsection{Real-World Applications}
 
-\subsection{Error Analysis}
+    \subsection{Error Analysis}
 
-The following are some choices that may have affected the results:
+    The following are some choices that may have affected the results:
 
-\begin{itemize}
-    \item There were five functions used for testing the models. Using more functions to test the two models would have caused more accurate results since they would model a much wider variety of graph shapes.
-    \item The choice of functions. Sufficiently high degree polynomials fit every function with a high degree of accuracy (> 90\%) except for the asymptotic Function 2 due to the fact that polynomials have poor asymptotic properties. The representation of asymptotic function used while testing may not accurately reflect the distribution of data in the real world which models an asymptotic pattern, and for that reason the data could have been skewed. This problem can be solved in the future by increasing the diversity of the functions used.
-    \item The constant choice of $\eta$, the learning rate. For different architectures, the optimum learning rates can be different and therefore the data might have been skewed towards the architectures for which $\eta=6.5$ is the optimum learning rate. This issue can be solved in the future by incorporating a random hyperparameter search algorithm for optimizing the learning rate based on the architecture.
-\end{itemize}
+    \begin{itemize}
+        \item There were five functions used for testing the models. Using more functions to test the two models would have caused more accurate results since they would model a much wider variety of graph shapes.
+        \item The choice of functions. Sufficiently high degree polynomials fit every function with a high degree of accuracy (> 90\%) except for the asymptotic Function 2 due to the fact that polynomials have poor asymptotic properties. The representation of asymptotic function used while testing may not accurately reflect the distribution of data in the real world which models an asymptotic pattern, and for that reason the data could have been skewed. This problem can be solved in the future by increasing the diversity of the functions used.
+        \item The constant choice of $\eta$, the learning rate. For different architectures, the optimum learning rates can be different and therefore the data might have been skewed towards the architectures for which $\eta=6.5$ is the optimum learning rate. This issue can be solved in the future by incorporating a random hyperparameter search algorithm for optimizing the learning rate based on the architecture.
+    \end{itemize}
 
 \end{document}
