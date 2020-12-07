@@ -8,7 +8,7 @@ OUTPUT_FOLDER.mkdir(parents=True,exist_ok=True)
 
 CHECKPOINTS_PER_RUN = 10
 
-img_dir = Path('datasets', 'style_transfer')
+img_dir = Path(ROOT_FOLDER, 'datasets', 'style_transfer')
 if not img_dir.exists() or not img_dir.is_dir():
     raise FileNotFoundError('The image directory does not exist')
 
