@@ -88,7 +88,6 @@ def run_style_transfer(
         for i in range(num_iterations):
             start = time.time()
             grads, all_loss = compute_grads(cfg)
-            logger.info(grads)
             loss, style_score, content_score = all_loss
             # grads, loss, style_score, content_score = compute_grads(
             #     model=model,
@@ -120,6 +119,7 @@ def run_style_transfer(
                 plot_img = deprocess_img(plot_img)
                 save_img(best_img,run_id,i,output_folder)
                 IPython.display.display_png(Image.fromarray(plot_img))
+                logger.info(grads)
                 stats.info(stats_line)
             elif not verbose:
                 stats.debug(stats_line)
