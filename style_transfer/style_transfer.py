@@ -18,6 +18,8 @@ from style_transfer.config import (
     )
 from style_transfer._logging import stats_logger
 
+import IPython.display
+
 logger = logging.getLogger(__name__)
 
 def run_style_transfer(
@@ -113,7 +115,8 @@ def run_style_transfer(
             
             # Save checkpoint image
             if i % checkpoint_interval == 0:
-                save_img(best_img,run_id,i,output_folder)
+                save_img(deprocess_img(init_image.numpy()),run_id,i,output_folder)
+                IPython.display.display_png(Image.fromarray(best_img))
                 stats.info(stats_line)
             elif not verbose:
                 stats.debug(stats_line)
