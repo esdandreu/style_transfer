@@ -115,8 +115,10 @@ def run_style_transfer(
             
             # Save checkpoint image
             if i % checkpoint_interval == 0:
-                save_img(deprocess_img(init_image.numpy()),run_id,i,output_folder)
-                IPython.display.display_png(Image.fromarray(best_img))
+                plot_img = init_image.numpy()
+                plot_img = deprocess_img(plot_img)
+                save_img(best_img,run_id,i,output_folder)
+                IPython.display.display_png(Image.fromarray(plot_img))
                 stats.info(stats_line)
             elif not verbose:
                 stats.debug(stats_line)

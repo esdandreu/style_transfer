@@ -12,6 +12,7 @@ def config_logger(
     verbose: bool = False, 
     ):
     logger = logging.getLogger('style_transfer')
+    logger.handlers = []
     logger.setLevel(logging.INFO if not verbose else logging.DEBUG)
     # STREAM
     console_handler = logging.StreamHandler()
