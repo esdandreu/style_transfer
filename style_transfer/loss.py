@@ -80,24 +80,30 @@ def compute_loss(
     loss = style_score + content_score 
     return loss, style_score, content_score
 
+def compute_grads(cfg):
+    with tf.GradientTape() as tape: 
+        all_loss = compute_loss(**cfg)
+    # Compute gradients wrt input image
+    total_loss = all_loss[0]
+    return tape.gradient(total_loss, cfg['init_image']), all_loss
 
-def compute_grads(
-    model: tf.keras.models.Model, 
-    loss_weights, 
-    init_image, 
-    gram_style_features, 
-    content_features
-    ):
-    with tf.GradientTape() as tape: #? Why tape
-        loss, style_score, content_score = compute_loss(
-            model=model, 
-            loss_weights=loss_weights, 
-            init_image=init_image, 
-            gram_style_features=gram_style_features,
-            content_features=content_features,
-        )
-        # Compute gradients wrt input image
-        return (
-            tape.gradient(loss, init_image),
-            loss, style_score, content_score
-            )
+# def compute_grads(
+#     model: tf.keras.models.Model, 
+#     loss_weights, 
+#     init_image, 
+#     gram_style_features, 
+#     content_features
+#     ):
+#     with tf.GradientTape() as tape: #? Why tape
+#         loss, style_score, content_score = compute_loss(
+#             model=model, 
+#             loss_weights=loss_weights, 
+#             init_image=init_image, 
+#             gram_style_features=gram_style_features,
+#             content_features=content_features,
+#         )
+#         # Compute gradients wrt input image
+#         return (
+#             tape.gradient(loss, init_image),
+#             loss, style_score, content_score
+#             )

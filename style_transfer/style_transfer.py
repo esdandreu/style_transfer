@@ -87,7 +87,8 @@ def run_style_transfer(
     try: 
         for i in range(num_iterations):
             start = time.time()
-            grads, loss, style_score, content_score = compute_grads(**cfg)
+            grads, all_loss = compute_grads(cfg)
+            loss, style_score, content_score = all_loss
             # grads, loss, style_score, content_score = compute_grads(
             #     model=model,
             #     loss_weights=loss_weights,
@@ -95,7 +96,6 @@ def run_style_transfer(
             #     gram_style_features=gram_style_features,
             #     content_features=content_features
             #     )
-            # logger.info(f'{grads =}')
             optimizer.apply_gradients([(grads, init_image)])
             clipped = tf.clip_by_value(init_image, min_vals, max_vals)
             init_image.assign(clipped)
