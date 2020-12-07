@@ -10,12 +10,16 @@ CHECKPOINTS_PER_RUN = 10
 
 img_dir = Path(ROOT_FOLDER, 'datasets', 'style_transfer')
 if not img_dir.exists() or not img_dir.is_dir():
-    raise FileNotFoundError('The image directory does not exist')
+    raise FileNotFoundError(f'The image directory {img_dir} does not exist')
 
 STYLE_FOLDER = Path(img_dir, 'style')
 if not STYLE_FOLDER.exists() or not STYLE_FOLDER.is_dir():
-    raise FileNotFoundError('The style directory does not exist')
+    raise FileNotFoundError(
+        f'The style directory {STYLE_FOLDER} does not exist'
+        )
 
 CONTENT_FOLDER = Path(img_dir, 'content')
 if not CONTENT_FOLDER.exists() or not CONTENT_FOLDER.is_dir():
-    raise FileNotFoundError('The content directory does not exist')
+    raise FileNotFoundError(
+        f'The content directory {CONTENT_FOLDER} does not exist'
+        )
