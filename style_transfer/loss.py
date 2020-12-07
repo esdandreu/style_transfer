@@ -93,5 +93,8 @@ def compute_grads(
             model, loss_weights, init_image, 
             gram_style_features, content_features,
         )
-    # Compute gradients wrt input image
-    return tape.gradient(loss, init_image), loss, style_score, content_score
+        # Compute gradients wrt input image
+        return (
+            tape.gradient(loss, init_image),
+            loss, style_score, content_score
+            )

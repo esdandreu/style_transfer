@@ -14,27 +14,23 @@ from style_transfer.utils import (
     get_feature_representations, load_and_process_img, deprocess_img, save_img
     )
 from style_transfer.config import (
-    OUTPUT_FOLDER, STYLE_FOLDER, CONTENT_FOLDER, CHECKPOINTS_PER_RUN
+    OUTPUT_FOLDER, CHECKPOINTS_PER_RUN
     )
+from style_transfer._logging import stats_logger
 
 logger = logging.getLogger(__name__)
 
 def run_style_transfer(
-    content_name: str, 
-    style_name: str,
+    content_path: Path, 
+    style_path: Path,
     num_iterations: int = 1000,
     output_folder: Path = OUTPUT_FOLDER,
     content_weight: float = 1e3, 
     style_weight: float = 1e-2
     ): 
 
-    # Get path from content_name
-    # TODO solve the formats problem (get name from path instead of the other way)
-    content_path = Path(CONTENT_FOLDER, f'{content_name}.jpg')
-    style_path = Path(STYLE_FOLDER, f'{style_name}.jpg')
-
     # Image and stats identifier form input parameters
-    run_id = f'{content_name}_{style_name}'
+    run_id = f'{content_path.stem}_{style_path.stem}'
 
     # We don't need to (or want to) train any layers of our model, so we set
     # their trainable to false. 
@@ -56,7 +52,7 @@ def run_style_transfer(
     init_image = tf.Variable(init_image, dtype=tf.float32)
     # Create our optimizer
     # TODO play with optimizer? 
-    opt = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
+    optimizer = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
 
     # Store our best result
     best_loss, best_img = float('inf'), None
@@ -73,7 +69,9 @@ def run_style_transfer(
     run_start = time.time()
     checkpoint_interval = num_iterations/(CHECKPOINTS_PER_RUN)
 
-    # TODO create stats file
+    # Create stats file
+    stats = stats_logger(Path(output_folder, f'{run_id}.csv'))
+    stats.info('run_time,iteration,loss,style_loss,content_loss,time')
     
     try: 
         for i in range(num_iterations):
@@ -85,19 +83,19 @@ def run_style_transfer(
                 gram_style_features=gram_style_features,
                 content_features=content_features
                 )
-            opt.apply_gradients([(grads, init_image)])
+            optimizer.apply_gradients([(grads, init_image)])
             clipped = tf.clip_by_value(init_image, min_vals, max_vals)
             init_image.assign(clipped)
+            end = time.time()
 
-            # TODO save iteration loss and process time
-            logger.info(
-                f'Iteration {i}\n{ loss = }\n{ style_score = }'
-                f'\n{ content_score = }\n{ time.time()-run_start = }\n'
-                f'{ time.time()-start = }'
+            # Save iteration stats
+            stats.info(
+                f'{end-run_start:.4f},{i},{loss:.4e},{style_score:.4e},'
+                f'{content_score:.4e},{end-start:.4f}'
                 )
             
+            # Update best loss and best image from total loss. 
             if loss < best_loss:
-                # Update best loss and best image from total loss. 
                 best_loss = loss
                 best_img = deprocess_img(init_image.numpy())
             
@@ -105,10 +103,16 @@ def run_style_transfer(
             if i % checkpoint_interval == 0:
                 save_img(best_img,run_id,i,output_folder)
 
+    except KeyboardInterrupt as e:
+        logger.error('Keyboard Interrupt')
+        save_img(best_img,run_id,i,output_folder,error=True)
+        raise e
     except Exception as e:
         logger.error(str(e), exc_info=e)
         save_img(best_img,run_id,i,output_folder,error=True)
         return False
+    finally:
+        stats.handlers = []
     
     save_img(best_img,run_id,i+1,output_folder)
     return True
