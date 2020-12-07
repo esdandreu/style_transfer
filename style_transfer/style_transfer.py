@@ -26,7 +26,8 @@ def run_style_transfer(
     num_iterations: int = 1000,
     output_folder: Path = OUTPUT_FOLDER,
     content_weight: float = 1e3, 
-    style_weight: float = 1e-2
+    style_weight: float = 1e-2,
+    verbose: bool = False,
     ): 
 
     # Image and stats identifier form input parameters
@@ -49,7 +50,9 @@ def run_style_transfer(
     
     # Set initial image
     init_image = load_and_process_img(content_path)
+    image = tf.Variable(init_image, dtype=tf.float32)
     init_image = tf.Variable(init_image, dtype=tf.float32)
+
     # Create our optimizer
     # TODO play with optimizer? 
     optimizer = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
@@ -83,25 +86,31 @@ def run_style_transfer(
                 gram_style_features=gram_style_features,
                 content_features=content_features
                 )
-            optimizer.apply_gradients([(grads, init_image)])
-            clipped = tf.clip_by_value(init_image, min_vals, max_vals)
-            init_image.assign(clipped)
+            optimizer.apply_gradients([(grads, image)])
+            clipped = tf.clip_by_value(image, min_vals, max_vals)
+            image.assign(clipped)
             end = time.time()
 
-            # Save iteration stats
-            stats.info(
+            # Iteration stats
+            stats_line = (
                 f'{end-run_start:.4f},{i},{loss:.4e},{style_score:.4e},'
                 f'{content_score:.4e},{end-start:.4f}'
                 )
+
             
             # Update best loss and best image from total loss. 
             if loss < best_loss:
                 best_loss = loss
-                best_img = deprocess_img(init_image.numpy())
+                best_img = deprocess_img(image.numpy())
             
             # Save checkpoint image
             if i % checkpoint_interval == 0:
                 save_img(best_img,run_id,i,output_folder)
+                stats.info(stats_line)
+            elif not verbose:
+                stats.debug(stats_line)
+            else:
+                stats.info(stats_line)
 
     except KeyboardInterrupt as e:
         logger.error('Keyboard Interrupt')

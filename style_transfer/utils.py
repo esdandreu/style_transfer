@@ -82,8 +82,6 @@ def deprocess_img(processed_img):
         "Input to deprocess image must be an image of "
         "dimension [1, height, width, channel] or [height, width, channel]"
         )
-    if len(x.shape) != 3:
-        raise ValueError("Invalid input to deprocessing image")
     
     # perform the inverse of the preprocessing step
     x[:, :, 0] += 103.939

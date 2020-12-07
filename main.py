@@ -27,9 +27,10 @@ for content_path in CONTENT_FOLDER.iterdir():
             content_path=content_path,
             style_path=style_path,
             output_folder=run_folder, 
-            num_iterations=2,
+            num_iterations=1000,
             content_weight=1e3, 
             style_weight=1e-2,
+            verbose=True,
             )
             
 logger.info('Finished run')

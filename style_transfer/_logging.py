@@ -37,10 +37,10 @@ def stats_logger(
     path: Union[Path, str],
     ):
     logger = logging.getLogger('stats')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     # STREAM
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(
         logging.Formatter('%(name)s (%(asctime)s): %(message)s')
         )
@@ -51,7 +51,7 @@ def stats_logger(
     file_handler = logging.FileHandler(
         filename=path, encoding='utf-8'
         )
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(
         logging.Formatter('%(message)s')
         )
