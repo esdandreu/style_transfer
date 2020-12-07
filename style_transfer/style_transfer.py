@@ -96,7 +96,7 @@ def run_style_transfer(
             #     gram_style_features=gram_style_features,
             #     content_features=content_features
             #     )
-            optimizer.apply_gradients([(grads, init_image)])
+            # optimizer.apply_gradients([(grads, init_image)])
             clipped = tf.clip_by_value(init_image, min_vals, max_vals)
             init_image.assign(clipped)
             end = time.time()
