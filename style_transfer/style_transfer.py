@@ -50,7 +50,6 @@ def run_style_transfer(
     
     # Set initial image
     init_image = load_and_process_img(content_path)
-    image = tf.Variable(init_image, dtype=tf.float32)
     init_image = tf.Variable(init_image, dtype=tf.float32)
 
     # Create our optimizer
@@ -62,6 +61,13 @@ def run_style_transfer(
     
     # Argument for computing the gradients
     loss_weights = (style_weight, content_weight)
+    cfg = {
+        'model': model,
+        'loss_weights': loss_weights,
+        'init_image': init_image,
+        'gram_style_features': gram_style_features,
+        'content_features': content_features
+    }
         
     # ? What is this
     norm_means = np.array([103.939, 116.779, 123.68])
@@ -79,16 +85,18 @@ def run_style_transfer(
     try: 
         for i in range(num_iterations):
             start = time.time()
-            grads, loss, style_score, content_score = compute_grads(
-                model=model,
-                loss_weights=loss_weights,
-                init_image=init_image,
-                gram_style_features=gram_style_features,
-                content_features=content_features
-                )
-            optimizer.apply_gradients([(grads, image)])
-            clipped = tf.clip_by_value(image, min_vals, max_vals)
-            image.assign(clipped)
+            grads, loss, style_score, content_score = compute_grads(**cfg)
+            # grads, loss, style_score, content_score = compute_grads(
+            #     model=model,
+            #     loss_weights=loss_weights,
+            #     init_image=init_image,
+            #     gram_style_features=gram_style_features,
+            #     content_features=content_features
+            #     )
+            # logger.info(f'{grads =}')
+            optimizer.apply_gradients([(grads, init_image)])
+            clipped = tf.clip_by_value(init_image, min_vals, max_vals)
+            init_image.assign(clipped)
             end = time.time()
 
             # Iteration stats
@@ -101,7 +109,7 @@ def run_style_transfer(
             # Update best loss and best image from total loss. 
             if loss < best_loss:
                 best_loss = loss
-                best_img = deprocess_img(image.numpy())
+                best_img = deprocess_img(init_image.numpy())
             
             # Save checkpoint image
             if i % checkpoint_interval == 0:
