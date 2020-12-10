@@ -24,6 +24,7 @@ def run_style_transfer(
     content_path: Path, 
     style_path: Path,
     num_iterations: int = 1000,
+    num_checkpoints: int = CHECKPOINTS_PER_RUN,
     output_folder: Path = OUTPUT_FOLDER,
     content_weight: float = 1e3, 
     style_weight: float = 1e-2,
@@ -92,12 +93,12 @@ def run_style_transfer(
     max_vals = 255 - norm_means   
 
     # Interval for checkpoints
-    run_start = time.time()
-    checkpoint_interval = num_iterations/(CHECKPOINTS_PER_RUN)
+    checkpoint_interval = num_iterations/(num_checkpoints)
 
     # Create stats file
     stats = stats_logger(Path(output_folder, f'{run_id}.csv'))
     stats.info('run_time,iteration,loss,style_loss,content_loss,time')
+    run_start = time.time()
     
     try: 
         for i in range(num_iterations):
