@@ -136,7 +136,6 @@ def run_style_transfer(
                 save_img(best_img,run_id,i,output_folder)
                 if log_images:
                     IPython.display.display_png(Image.fromarray(plot_img))
-                logger.info(grads)
                 stats.info(stats_line)
             elif not verbose:
                 stats.debug(stats_line)
