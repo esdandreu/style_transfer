@@ -1,6 +1,9 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications.vgg19 import VGG19
 
+# TODO pretraining experiment
+# weights: one of None (random initialization), 'imagenet' (pre-training on ImageNet), or the path to the weights file to be loaded.
+
 from style_transfer.utils import load_and_process_img
 
 def get_model(content_layers, style_layers):
