@@ -1,3 +1,4 @@
+# loss.py
 import tensorflow as tf
 
 def get_content_loss(base_content, target):
@@ -23,12 +24,11 @@ def get_style_loss(base_style, gram_target):
     # height, width, channels = base_style.get_shape().as_list()
     gram_style = gram_matrix(base_style)
 
-    # / (4. * (channels ** 2) * (width * height) ** 2)
-    return tf.reduce_mean(tf.square(gram_style - gram_target))
+    return tf.reduce_mean(tf.square(gram_style - gram_target))# / (4. * (channels ** 2) * (width * height) ** 2)
 
 
 def compute_loss(
-    model: tf.keras.models.Model, 
+    model: tf.keras.models.Model,
     loss_weights, 
     init_image, 
     gram_style_features, 
@@ -59,21 +59,19 @@ def compute_loss(
     model_outputs = model(init_image)
     
     style_output_features = model_outputs[:num_style_layers]
-    content_output_features = model_outputs[num_content_layers:]
+    content_output_features = model_outputs[num_style_layers:]
     
     style_score = 0
     content_score = 0
 
-    # Accumulate style losses from all layers
+    # Accumulate losses from all layers
     # Here, we equally weight each contribution of each loss layer
-    weight_per_style_layer = 1.0 / float(num_style_layers)
-    for target_style, comb_style in zip(gram_style_features, style_output_features):
-        style_score += weight_per_style_layer * get_style_loss(comb_style[0], target_style)
-        
-    # Accumulate content losses from all layers 
-    weight_per_content_layer = 1.0 / float(num_content_layers)
-    for target_content, comb_content in zip(content_features, content_output_features):
-        content_score += weight_per_content_layer*get_content_loss(comb_content[0], target_content)
+    layer_weight = 1.0 / float(num_style_layers)
+    for target, comb in zip(gram_style_features, style_output_features):
+        style_score += layer_weight*get_style_loss(comb[0], target)
+    layer_weight = 1.0 / float(num_content_layers)
+    for target, comb in zip(content_features, content_output_features):
+        content_score += layer_weight*get_content_loss(comb[0], target)
     
     style_score *= style_weight
     content_score *= content_weight

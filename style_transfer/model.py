@@ -3,19 +3,7 @@ from tensorflow.keras.applications.vgg19 import VGG19
 
 from style_transfer.utils import load_and_process_img
 
-# TODO build in function
-# Content layer where will pull our feature maps
-content_layers = ['block5_conv2'] 
-
-# Style layer we are interested in
-style_layers = ['block1_conv1',
-                'block2_conv1',
-                'block3_conv1', 
-                'block4_conv1', 
-                'block5_conv1'
-               ]
-
-def get_model(content_layers, style_layers) -> Model:
+def get_model(content_layers, style_layers):
     """ Creates our model with access to intermediate layers. 
     
     This function will load the VGG19 model and access the intermediate layers. 
@@ -39,7 +27,7 @@ def get_model(content_layers, style_layers) -> Model:
     return model
 
 def get_feature_representations(
-    model: Model, 
+    model,
     content_path, 
     style_path,
     num_content_layers,
@@ -65,13 +53,13 @@ def get_feature_representations(
     style_outputs = model(style_image)
     content_outputs = model(content_image)
     
-    # Get the style and content feature representations from our model  
+    # Get the style and content feature representations from our model
     style_features = [
-        style_layer[0] 
-        for style_layer in style_outputs[:num_style_layers]
-        ]
+                      style_layer[0] 
+                      for style_layer in style_outputs[:num_style_layers]
+                      ]
     content_features = [
-        content_layer[0] 
-        for content_layer in content_outputs[num_content_layers:]
-        ]
+                        content_layer[0] 
+                        for content_layer in content_outputs[num_style_layers:]
+                        ]
     return style_features, content_features
