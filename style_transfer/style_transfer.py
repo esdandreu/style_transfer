@@ -86,7 +86,6 @@ def run_style_transfer(
     # Store our best result
     best_loss, best_img = float('inf'), None
     
-        
     # ? What is this
     norm_means = np.array([103.939, 116.779, 123.68])
     min_vals = -norm_means
@@ -122,7 +121,6 @@ def run_style_transfer(
                 f'{end-run_start:.4f},{i},{loss:.4e},{style_score:.4e},'
                 f'{content_score:.4e},{end-start:.4f}'
                 )
-
             
             # Update best loss and best image from total loss. 
             if loss < best_loss:
