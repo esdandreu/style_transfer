@@ -8,11 +8,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from pathlib import Path
 
-from style_transfer.model import get_model
+from style_transfer.model import get_model, get_feature_representations
 from style_transfer.loss import gram_matrix, compute_grads
-from style_transfer.utils import (
-    get_feature_representations, load_and_process_img, deprocess_img, save_img
-    )
+from style_transfer.utils import load_and_process_img, deprocess_img, save_img
 from style_transfer.config import (
     OUTPUT_FOLDER, CHECKPOINTS_PER_RUN
     )
@@ -30,6 +28,7 @@ def run_style_transfer(
     content_weight: float = 1e3, 
     style_weight: float = 1e-2,
     verbose: bool = False,
+    log_images: bool = False,
     ): 
 
     # Image and stats identifier form input parameters
@@ -37,14 +36,40 @@ def run_style_transfer(
 
     # We don't need to (or want to) train any layers of our model, so we set
     # their trainable to false. 
-    model = get_model() 
+
+    # TODO get as input
+    # Content layer where will pull our feature maps
+    content_layers = ['block5_conv2'] 
+
+    # Style layer we are interested in
+    style_layers = ['block1_conv1',
+                    'block2_conv1',
+                    'block3_conv1', 
+                    'block4_conv1', 
+                    'block5_conv1'
+                  ]
+
+    model = get_model(
+        content_layers=content_layers,
+        style_layers=style_layers,
+        )
+    
     for layer in model.layers:
         layer.trainable = False
     
+    # Argument for computing the gradients
+    loss_weights = (style_weight, content_weight)
+    num_content_layers = len(content_layers)
+    num_style_layers = len(style_layers)
+    
     # Get the style and content feature representations (from our specified
-    # intermediate layers) 
+    # intermediate layers)
     style_features, content_features = get_feature_representations(
-        model, content_path, style_path
+        model=model, 
+        content_path=content_path, 
+        style_path=style_path,
+        num_content_layers=num_content_layers,
+        num_style_layers=num_style_layers
         )
     gram_style_features = [
         gram_matrix(style_feature) for style_feature in style_features
@@ -61,15 +86,6 @@ def run_style_transfer(
     # Store our best result
     best_loss, best_img = float('inf'), None
     
-    # Argument for computing the gradients
-    loss_weights = (style_weight, content_weight)
-    cfg = {
-        'model': model,
-        'loss_weights': loss_weights,
-        'init_image': init_image,
-        'gram_style_features': gram_style_features,
-        'content_features': content_features
-    }
         
     # ? What is this
     norm_means = np.array([103.939, 116.779, 123.68])
@@ -87,16 +103,16 @@ def run_style_transfer(
     try: 
         for i in range(num_iterations):
             start = time.time()
-            grads, all_loss = compute_grads(cfg)
-            loss, style_score, content_score = all_loss
-            # grads, loss, style_score, content_score = compute_grads(
-            #     model=model,
-            #     loss_weights=loss_weights,
-            #     init_image=init_image,
-            #     gram_style_features=gram_style_features,
-            #     content_features=content_features
-            #     )
-            # optimizer.apply_gradients([(grads, init_image)])
+            grads, loss, style_score, content_score = compute_grads(
+                model=model,
+                loss_weights=loss_weights,
+                init_image=init_image,
+                gram_style_features=gram_style_features,
+                content_features=content_features,
+                num_content_layers=num_content_layers,
+                num_style_layers=num_style_layers
+                )
+            optimizer.apply_gradients([(grads, init_image)])
             clipped = tf.clip_by_value(init_image, min_vals, max_vals)
             init_image.assign(clipped)
             end = time.time()
@@ -118,7 +134,8 @@ def run_style_transfer(
                 plot_img = init_image.numpy()
                 plot_img = deprocess_img(plot_img)
                 save_img(best_img,run_id,i,output_folder)
-                IPython.display.display_png(Image.fromarray(plot_img))
+                if log_images:
+                    IPython.display.display_png(Image.fromarray(plot_img))
                 logger.info(grads)
                 stats.info(stats_line)
             elif not verbose:

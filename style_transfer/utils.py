@@ -42,38 +42,6 @@ def load_and_process_img(path_to_img):
     img = preprocess_input(img)
     return img
 
-def get_feature_representations(model, content_path, style_path):
-    """Helper function to compute our content and style feature
-    representations.
-
-    This function will simply load and preprocess both the content and style
-    images from their path. Then it will feed them through the network to
-    obtain the outputs of the intermediate layers. 
-
-    Arguments: model: The model that we are using. content_path: The path to
-        the content image. style_path: The path to the style image
-
-    Returns: returns the style features and the content features. 
-    """
-    # Load our images in 
-    content_image = load_and_process_img(content_path)
-    style_image = load_and_process_img(style_path)
-    
-    # batch compute content and style features
-    style_outputs = model(style_image)
-    content_outputs = model(content_image)
-    
-    # Get the style and content feature representations from our model  
-    style_features = [
-        style_layer[0] 
-        for style_layer in style_outputs[:model.num_style_layers]
-        ]
-    content_features = [
-        content_layer[0] 
-        for content_layer in content_outputs[model.num_content_layers:]
-        ]
-    return style_features, content_features
-
 def deprocess_img(processed_img):
     x = processed_img.copy()
     if len(x.shape) == 4:
