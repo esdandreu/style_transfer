@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 from PIL import Image
 from pathlib import Path
+from typing import List
 
 from style_transfer.model import get_model, get_feature_representations
 from style_transfer.loss import gram_matrix, compute_grads
@@ -23,11 +24,25 @@ logger = logging.getLogger(__name__)
 def run_style_transfer(
     content_path: Path, 
     style_path: Path,
+    content_layers: List[str] = ['block5_conv2'],
+    style_layers: List[str] = [
+        'block1_conv1',
+        'block2_conv1',
+        'block3_conv1', 
+        'block4_conv1', 
+        'block5_conv1'
+        ],
+    pre_training: bool = True, # Pre-training or random initialization of model
+    learning_rate: float = 5, # Optimizer parameter
+    beta_1: float = 0.99, # Optimizer parameter
+    beta_2: float = 0.999, # Optimizer parameter
+    epsilon: float = 1e-07, # Optimizer parameter
+    amsgrad: bool = False, # Whether to apply AMSGrad variant of the optimizer
+    content_weight: float = 1e3, 
+    style_weight: float = 1e-2,
     num_iterations: int = 1000,
     num_checkpoints: int = CHECKPOINTS_PER_RUN,
     output_folder: Path = OUTPUT_FOLDER,
-    content_weight: float = 1e3, 
-    style_weight: float = 1e-2,
     verbose: bool = False,
     log_images: bool = False,
     ): 
@@ -38,21 +53,10 @@ def run_style_transfer(
     # We don't need to (or want to) train any layers of our model, so we set
     # their trainable to false. 
 
-    # TODO get as input
-    # Content layer where will pull our feature maps
-    content_layers = ['block5_conv2'] 
-
-    # Style layer we are interested in
-    style_layers = ['block1_conv1',
-                    'block2_conv1',
-                    'block3_conv1', 
-                    'block4_conv1', 
-                    'block5_conv1'
-                  ]
-
     model = get_model(
         content_layers=content_layers,
         style_layers=style_layers,
+        pre_training=pre_training,
         )
     
     for layer in model.layers:
@@ -81,8 +85,13 @@ def run_style_transfer(
     init_image = tf.Variable(init_image, dtype=tf.float32)
 
     # Create our optimizer
-    # TODO play with optimizer? 
-    optimizer = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
+    optimizer = tf.optimizers.Adam(
+        learning_rate=learning_rate,
+        beta_1=beta_1,
+        beta_2=beta_2,
+        epsilon=epsilon,
+        amsgrad=amsgrad,
+        )
 
     # Store our best result
     best_loss, best_img = float('inf'), None

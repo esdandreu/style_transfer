@@ -1,3 +1,4 @@
+from typing import List
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications.vgg19 import VGG19
 
@@ -6,7 +7,11 @@ from tensorflow.keras.applications.vgg19 import VGG19
 
 from style_transfer.utils import load_and_process_img
 
-def get_model(content_layers, style_layers):
+def get_model(
+    content_layers: List[str],
+    style_layers: List[str],
+    pre_training: bool = True,
+    ):
     """ Creates our model with access to intermediate layers. 
     
     This function will load the VGG19 model and access the intermediate layers. 
@@ -17,9 +22,13 @@ def get_model(content_layers, style_layers):
         returns a keras model that takes image inputs and outputs the style and 
         content intermediate layers. 
     """
-    # TODO flexible pretrain and flexible layer number
     # Load our model. We load pretrained VGG, trained on imagenet data
-    vgg = VGG19(include_top=False, weights='imagenet')
+    vgg = VGG19(
+        include_top=False, # whether to include the 3 fully-connected layers at
+                           # the top of the network.
+        weights=('imagenet' if pre_training else None), # Pre-training or 
+                                                        # random initialization
+        )
     vgg.trainable = False
     # Get output layers corresponding to style and content layers 
     style_outputs = [vgg.get_layer(name).output for name in style_layers]
