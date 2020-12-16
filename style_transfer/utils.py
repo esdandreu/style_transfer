@@ -88,7 +88,8 @@ def append_codename(layers: List[str]):
     b = []
     l =[]
     for layer in layers:
-        if match:=_block_pattern.match(layer):
+        match = _block_pattern.match(layer)
+        if match:
             match = match.groupdict()
             b.append(match['block'])
             l.append(match['conv'] if 'conv' in match else match['pool'])
