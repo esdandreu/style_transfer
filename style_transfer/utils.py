@@ -4,6 +4,7 @@ mpl.rcParams['figure.figsize'] = (10,10)
 mpl.rcParams['axes.grid'] = False
 
 import numpy as np
+import logging
 import re
 
 from PIL import Image
@@ -11,6 +12,8 @@ from pathlib import Path
 from typing import Union, List
 from tensorflow.python.keras.preprocessing import image as kp_image
 from tensorflow.keras.applications.vgg19 import preprocess_input
+
+logger = logging.getLogger(__name__)
 
 def load_img(path_to_img):
     max_dim = 512
@@ -92,7 +95,7 @@ def append_codename(layers: List[str]):
         if match:
             match = match.groupdict()
             b.append(match['block'])
-            l.append(match['conv'] if 'conv' in match else match['pool'])
+            l.append(match['conv'] if match['conv'] else match['pool'])
         else:
-            raise ValueError(f'"{layer}" is not an accepted layer value')
+            raise ValueError(f'"{str(layer)}" is not an accepted layer value')
     return (f'{len(layers)}_B{"".join(b)}_L{"".join(l)}', layers)
