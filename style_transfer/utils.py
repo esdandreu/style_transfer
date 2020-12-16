@@ -4,10 +4,11 @@ mpl.rcParams['figure.figsize'] = (10,10)
 mpl.rcParams['axes.grid'] = False
 
 import numpy as np
+import re
 
 from PIL import Image
-from typing import Union
 from pathlib import Path
+from typing import Union, List
 from tensorflow.python.keras.preprocessing import image as kp_image
 from tensorflow.keras.applications.vgg19 import preprocess_input
 
@@ -67,3 +68,30 @@ def save_img(
     Image.fromarray(img_array).save(
         Path(folder,f'{"ERROR_" if error else ""}{run_id}_{iteration}.png')
         )
+    
+_block_pattern = re.compile(
+    r'block(?P<block>[0-9]{1})_'
+    r'(?P<layer>conv(?P<conv>[0-9]{1})|(?P<pool>[p]{1})ool)'
+    )
+
+def append_codename(layers: List[str]):
+    """VGG19 is composed of the following layers
+    [
+        'input_2', 'block1_conv1', 'block1_conv2', 'block1_pool', 
+        'block2_conv1', 'block2_conv2', 'block2_pool', 'block3_conv1', 
+        'block3_conv2', 'block3_conv3', 'block3_conv4', 'block3_pool', 
+        'block4_conv1', 'block4_conv2', 'block4_conv3', 'block4_conv4', 
+        'block4_pool', 'block5_conv1', 'block5_conv2', 'block5_conv3', 
+        'block5_conv4', 'block5_pool'
+    ]
+    """
+    b = []
+    l =[]
+    for layer in layers:
+        if match:=_block_pattern.match(layer):
+            match = match.groupdict()
+            b.append(match['block'])
+            l.append(match['conv'] if 'conv' in match else match['pool'])
+        else:
+            raise ValueError(f'"{layer}" is not an accepted layer value')
+    return (f'{len(layers)}_B{"".join(b)}_L{"".join(l)}', layers)
