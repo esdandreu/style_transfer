@@ -72,7 +72,7 @@ def save_img(
         Path(
             folder,
             f'{"ERROR_" if error else ""}{run_id}'
-            f'{("_"+str(iteration)) if iteration else ""}.png')
+            f'{("_"+str(iteration)) if iteration is None else ""}.png')
             )
     
 _block_pattern = re.compile(
