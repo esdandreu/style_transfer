@@ -141,7 +141,7 @@ def run_style_transfer(
             if i % checkpoint_interval == 0:
                 plot_img = init_image.numpy()
                 plot_img = deprocess_img(plot_img)
-                save_img(best_img,run_id,i,output_folder)
+                save_img(best_img,run_id,output_folder,iteration=i)
                 if log_images:
                     IPython.display.display_png(Image.fromarray(plot_img))
                 stats.info(stats_line)
@@ -152,14 +152,14 @@ def run_style_transfer(
 
     except KeyboardInterrupt as e:
         logger.error('Keyboard Interrupt')
-        save_img(best_img,run_id,i,output_folder,error=True)
+        save_img(best_img,run_id,output_folder,iteration=i,error=True)
         raise e
     except Exception as e:
         logger.error(str(e), exc_info=e)
-        save_img(best_img,run_id,i,output_folder,error=True)
+        save_img(best_img,run_id,output_folder,iteration=i,error=True)
         return False
     finally:
         stats.handlers = []
     
-    save_img(best_img,run_id,i+1,output_folder)
+    save_img(best_img,run_id,output_folder)
     return True

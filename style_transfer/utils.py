@@ -9,7 +9,7 @@ import re
 
 from PIL import Image
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Optional
 from tensorflow.python.keras.preprocessing import image as kp_image
 from tensorflow.keras.applications.vgg19 import preprocess_input
 
@@ -65,12 +65,15 @@ def deprocess_img(processed_img):
     return x
 
 def save_img(
-    img_array, run_id: str, iteration: int, folder: Union[str,Path], 
-    error: bool = False
+    img_array, run_id: str, folder: Union[str,Path], 
+    iteration: Optional[int] = None, error: bool = False,
     ):
     Image.fromarray(img_array).save(
-        Path(folder,f'{"ERROR_" if error else ""}{run_id}_{iteration}.png')
-        )
+        Path(
+            folder,
+            f'{"ERROR_" if error else ""}{run_id}'
+            f'{("_"+str(iteration)) if iteration else ""}.png')
+            )
     
 _block_pattern = re.compile(
     r'block(?P<block>[0-9]{1})_'
