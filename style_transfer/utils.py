@@ -80,7 +80,8 @@ _block_pattern = re.compile(
     r'(?P<layer>conv(?P<conv>[0-9]{1})|(?P<pool>[p]{1})ool)'
     )
 
-def append_codename(layers: List[str]):
+def layers_codename(layers: List[str]):
+
     """VGG19 is composed of the following layers
     [
         'input_2', 'block1_conv1', 'block1_conv2', 'block1_pool', 
@@ -101,4 +102,7 @@ def append_codename(layers: List[str]):
             l.append(match['conv'] if match['conv'] else match['pool'])
         else:
             raise ValueError(f'"{str(layer)}" is not an accepted layer value')
-    return (f'{len(layers)}_B{"".join(b)}_L{"".join(l)}', layers)
+    return f'{len(layers)}_B{"".join(b)}_L{"".join(l)}'
+
+def append_codename(layers: List[str]):
+    return (layers_codename(layers), layers)
