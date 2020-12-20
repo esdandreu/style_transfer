@@ -170,13 +170,13 @@ class Experiment:
             parameter=parameter,
             **kwargs
             )
-        options.sort()
         for fun in [int, float, str2bool]:
             try:
                 options = [fun(x) for x in options]
                 break
             except ValueError:
                 continue
+        options.sort()
         return options
 
     def _options(self, folder: Path, parameter: str, **kwargs) -> List[str]:
