@@ -55,13 +55,7 @@ class Experiment:
         content_path: str, 
         style_path: str,
         content_layers: Union[List[str],str] = ['block5_conv2'],
-        style_layers: Union[List[str],str] = [
-            'block1_conv1',
-            'block2_conv1',
-            'block3_conv1', 
-            'block4_conv1', 
-            'block5_conv1'
-            ],
+        style_layers: Union[List[str],str] = '5_B12345_L11111',
         pre_training: bool = True,
         learning_rate: float = 5,
         beta_1: float = 0.99,
@@ -94,8 +88,10 @@ class Experiment:
                 parameter = x.stem
         if parameter:
             if folders:
-                if value:=kwargs.get(parameter,None):
-                    if f:=folders.get(value, None):
+                value = kwargs.get(parameter,None)
+                if value:
+                    f = folders.get(value, None)
+                    if f:
                         return self._output_folder(folder=f, **kwargs) 
                     raise ValueError(
                         f'{value = } of {parameter = } not found in experiment'
@@ -110,7 +106,8 @@ class Experiment:
         return folder
 
     def options(self, parameter: str) -> List[Union[str,bool,float,int]]:
-        if (options:=self._options.get(parameter, None)) is None:
+        options = self._options.get(parameter, None)
+        if options is None:
             options = self._find_options(self.folder, parameter)
             for fun in [int, float, str2bool]:
                 try:
@@ -164,13 +161,7 @@ class Experiment:
         content_path: str, 
         style_path: str,
         content_layers: Union[List[str],str] = ['block5_conv2'],
-        style_layers: Union[List[str],str] = [
-            'block1_conv1',
-            'block2_conv1',
-            'block3_conv1', 
-            'block4_conv1', 
-            'block5_conv1'
-            ],
+        style_layers: Union[List[str],str] = '5_B12345_L11111',
         pre_training: bool = True,
         learning_rate: float = 5,
         beta_1: float = 0.99,
@@ -198,13 +189,7 @@ class Experiment:
         style_path: str,
         iterations: Optional[int] = None,
         content_layers: Union[List[str],str] = ['block5_conv2'],
-        style_layers: Union[List[str],str] = [
-            'block1_conv1',
-            'block2_conv1',
-            'block3_conv1', 
-            'block4_conv1', 
-            'block5_conv1'
-            ],
+        style_layers: Union[List[str],str] = '5_B12345_L11111',
         pre_training: bool = True,
         learning_rate: float = 5,
         beta_1: float = 0.99,
