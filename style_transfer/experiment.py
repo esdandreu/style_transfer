@@ -23,21 +23,37 @@ CONTENT_WEIGHT = 'content_weight'
 STYLE_WEIGHT = 'style_weight'
 NUM_ITERATIONS = 'num_iterations'
 
-PARAMETERS = [
-    CONTENT,
-    STYLE,
-    CONTENT_LAYERS,
-    STYLE_LAYERS,
-    PRE_TRAINING,
-    LEARNING_RATE,
-    BETA_1,
-    BETA_2,
-    EPSILON,
-    AMSGRAD,
-    CONTENT_WEIGHT,
-    STYLE_WEIGHT,
-    NUM_ITERATIONS,
-]
+TYPES = {
+    CONTENT: str,
+    STYLE: str,
+    CONTENT_LAYERS: str,
+    STYLE_LAYERS: str,
+    PRE_TRAINING: bool,
+    LEARNING_RATE: float,
+    BETA_1: float,
+    BETA_2: float,
+    EPSILON: float,
+    AMSGRAD: bool,
+    CONTENT_WEIGHT: float,
+    STYLE_WEIGHT: float,
+    NUM_ITERATIONS: int,
+}
+
+DEFAULTS = {
+    CONTENT: 'turtle', 
+    STYLE: 'kanagawa',
+    CONTENT_LAYERS: '1_B5_L2',
+    STYLE_LAYERS: '5_B12345_L11111',
+    PRE_TRAINING: True,
+    LEARNING_RATE: 5,
+    BETA_1: 0.99,
+    BETA_2: 0.999,
+    EPSILON: 1e-07,
+    AMSGRAD: False,
+    CONTENT_WEIGHT: 1e3, 
+    STYLE_WEIGHT: 1e-2,
+    NUM_ITERATIONS: 1000,
+}
 
 def str2bool(string: str) -> bool:
     if string == "True":
