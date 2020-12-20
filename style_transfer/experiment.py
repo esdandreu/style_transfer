@@ -43,7 +43,7 @@ def value2str(value):
     return string, value
 
 class Experiment:
-    _options = {}
+    # _options = {}
 
     def __init__(self, folder: Union[Path, str]):
         self.folder = Path(folder)
@@ -106,39 +106,91 @@ class Experiment:
                 raise RuntimeError('Experiment folder is not clean')
         return folder
 
-    def options
-
-    def options(self, parameter: str) -> List[Union[str,bool,float,int]]:
-        options = self._options.get(parameter, None)
-        if options is None:
-            options = self._find_options(self.folder, parameter)
-            for fun in [int, float, str2bool]:
-                try:
-                    options = [fun(x) for x in options]
-                    break
-                except ValueError:
-                    continue
-            self._options[parameter] = options
+    def options(
+        self,
+        parameter: str,
+        content_path: str, 
+        style_path: str,
+        content_layers: Union[List[str],str] = ['block5_conv2'],
+        style_layers: Union[List[str],str] = '5_B12345_L11111',
+        pre_training: bool = True,
+        learning_rate: float = 5,
+        beta_1: float = 0.99,
+        beta_2: float = 0.999,
+        epsilon: float = 1e-07,
+        amsgrad: bool = False,
+        content_weight: float = 1e3, 
+        style_weight: float = 1e-2,
+        num_iterations: int = 1000,
+        ) -> List[Union[str,bool,float,int]]:
+        kwargs = {}
+        for key, value in locals().items():
+            if key in ['self', 'parameter', parameter]:
+                continue
+            elif (
+                key in [CONTENT_LAYERS, STYLE_LAYERS] 
+                and isinstance(value, list)
+                ):
+                value = layers_codename(value)
+            kwargs[key], _ = value2str(value)
+        options = self._options(
+            folder=self.folder, 
+            parameter=parameter,
+            **kwargs
+            )
+        for fun in [int, float, str2bool]:
+            try:
+                options = [fun(x) for x in options]
+                break
+            except ValueError:
+                continue
         return options
 
-    def _find_options(self, folder: Path, parameter: str) -> List[str]:
-        folders = []
-        found_parameter = False
+    def _options(self, folder: Path, parameter: str, **kwargs) -> List[str]:
+        f_parameter = False
+        folders = {}
         for x in folder.iterdir():
-            if x.is_dir() and x.stem != 'logs':
-                folders.append(x)
-            elif not found_parameter and not x.suffix:
-                if x.stem == parameter:
-                    found_parameter = True
-        if found_parameter:
-            return [x.name for x in folders]
-        else:
-            try:
-                return self._find_options(folders[0], parameter)
-            except IndexError:
-                raise ValueError(
-                    f'Could not find options for parameter = {parameter}'
-                    )
+            if x.is_dir():
+                folders[x.name] = x
+            elif not f_parameter and not x.suffix:
+                f_parameter = x.stem
+        if f_parameter:
+            if folders:
+                if f_parameter == parameter:
+                    out = []
+                    for value, f in folders.items():
+                        try:
+                            # Check if the folder finishes in a valid input
+                            self._output_folder(
+                                folder=f, 
+                                **{parameter: value},
+                                **kwargs
+                                )
+                            out.append(value)
+                        except ValueError:
+                            continue
+                    return out
+                else:
+                    f_parameter
+                    value = kwargs.get(f_parameter,None)
+                    if value:
+                        logger.info(folders)
+                        f = folders.get(value, None)
+                        if f:
+                            return self._options(folder=f,
+                                parameter=parameter,
+                                **kwargs
+                                ) 
+                        raise ValueError(
+                            f'Value = {value} of f_parameter = {f_parameter} '
+                            'not found in experiment. Available options: '
+                            f'{[x for x in folders.keys()]}'
+                            )
+                    raise ValueError(
+                        'Found parameter not in f_parameter list '
+                        f'{[p for p in kwargs.keys()]}'
+                        )
+        raise RuntimeError('Experiment folder is not clean')
 
     def clean_data(self):
         if not self.folder.is_dir():
