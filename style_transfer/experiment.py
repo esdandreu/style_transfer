@@ -28,7 +28,7 @@ def str2bool(string: str) -> bool:
         return True
     elif string == "False":
         return False
-    raise ValueError(f'Could not convert into bool, {string = }')
+    raise ValueError(f'Could not convert string "{string}" into bool')
 
 def value2str(value):
     if isinstance(value, tuple):
@@ -94,8 +94,9 @@ class Experiment:
                     if f:
                         return self._output_folder(folder=f, **kwargs) 
                     raise ValueError(
-                        f'{value = } of {parameter = } not found in experiment'
-                        f'. Available options: {[x for x in folders.keys()]}'
+                        f'Value = {value} of parameter = {parameter} not found'
+                        ' in experiment. Available options: '
+                        f'{[x for x in folders.keys()]}'
                         )
                 raise ValueError(
                     'Found parameter not in parameter list '
@@ -133,7 +134,9 @@ class Experiment:
             try:
                 return self._find_options(folders[0], parameter)
             except IndexError:
-                raise ValueError(f'Could not find options for {parameter = }')
+                raise ValueError(
+                    f'Could not find options for parameter = {parameter}'
+                    )
 
     def clean_data(self):
         if not self.folder.is_dir():
@@ -153,7 +156,7 @@ class Experiment:
         if remove:
             [x.unlink() for x in removefiles] # Clean useless files
             folder.rmdir() # Folder should now be empty, we can remove it
-            logger.info(f'Removed {folder = }')
+            logger.info(f'Removed folder = {folder}')
         return remove
 
     def loss_plot(
