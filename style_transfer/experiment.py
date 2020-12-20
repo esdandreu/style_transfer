@@ -23,6 +23,22 @@ CONTENT_WEIGHT = 'content_weight'
 STYLE_WEIGHT = 'style_weight'
 NUM_ITERATIONS = 'num_iterations'
 
+PARAMETERS = [
+    CONTENT,
+    STYLE,
+    CONTENT_LAYERS,
+    STYLE_LAYERS,
+    PRE_TRAINING,
+    LEARNING_RATE,
+    BETA_1,
+    BETA_2,
+    EPSILON,
+    AMSGRAD,
+    CONTENT_WEIGHT,
+    STYLE_WEIGHT,
+    NUM_ITERATIONS,
+]
+
 def str2bool(string: str) -> bool:
     if string == "True":
         return True
