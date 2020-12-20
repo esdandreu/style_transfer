@@ -170,6 +170,7 @@ class Experiment:
             parameter=parameter,
             **kwargs
             )
+        options.sort()
         for fun in [int, float, str2bool]:
             try:
                 options = [fun(x) for x in options]
