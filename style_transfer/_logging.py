@@ -32,7 +32,7 @@ def config_logger(
         file_handler.setFormatter(logging.Formatter(
             '%(name)s [%(levelname)s] %(asctime)s: %(message)s'
             ))
-    logger.addHandler(file_handler)
+        logger.addHandler(file_handler)
     return logger
 
 def stats_logger(

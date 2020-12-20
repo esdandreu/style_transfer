@@ -171,7 +171,7 @@ class Experiment:
             **kwargs
             )
         options.sort()
-        for fun in [int, float, str2bool]:
+        for fun in [float, int, str2bool]:
             try:
                 options = [fun(x) for x in options]
                 break
