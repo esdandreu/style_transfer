@@ -206,7 +206,6 @@ class Experiment:
                     f_parameter
                     value = kwargs.get(f_parameter,None)
                     if value:
-                        logger.info(folders)
                         f = folders.get(value, None)
                         if f:
                             return self._options(folder=f,
