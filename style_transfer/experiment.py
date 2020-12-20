@@ -259,17 +259,18 @@ class Experiment:
         content_weight: float = 1e3, 
         style_weight: float = 1e-2,
         num_iterations: int = 1000,
+        **kwargs
         ):
         folder = self.output_folder(
-            **{k: v for k, v in locals().items() if k != 'self'}
+            **{k: v for k, v in locals().items() if k not in ['self','kwargs']}
             )
         filename = f'{content_path}_{style_path}.csv'
-        return self._loss_plot(csv_file=Path(folder, filename))
+        return self._loss_plot(csv_file=Path(folder, filename), **kwargs)
 
-    def _loss_plot(self, csv_file: Path):
+    def _loss_plot(self, csv_file: Path, **kwargs):
         return pd.read_csv(csv_file,
             usecols=['loss', 'style_loss', 'content_loss']
-            ).plot()
+            ).plot(**kwargs)
 
     def image(
         self,

@@ -16,6 +16,6 @@ logger.info(f'{r.options(STYLE_WEIGHT, "turtle", "kanagawa") = }')
 
 # im = r.image("turtle", "kanagawa").show()
 
-# fig = r.loss_plot("turtle", "kanagawa")
-# fig.set_yscale('log')
-# plt.show()
+fig = r.loss_plot("turtle", "kanagawa")
+fig.set_yscale('log')
+plt.show()
