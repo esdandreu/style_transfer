@@ -106,6 +106,8 @@ class Experiment:
                 raise RuntimeError('Experiment folder is not clean')
         return folder
 
+    def options
+
     def options(self, parameter: str) -> List[Union[str,bool,float,int]]:
         options = self._options.get(parameter, None)
         if options is None:
