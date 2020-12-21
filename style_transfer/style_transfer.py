@@ -1,5 +1,6 @@
 import time
 import logging
+import warnings
 
 import numpy as np
 import tensorflow as tf
@@ -7,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from PIL import Image
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from style_transfer.model import get_model, get_feature_representations
 from style_transfer.loss import gram_matrix, compute_grads
@@ -20,6 +21,9 @@ from style_transfer._logging import stats_logger
 import IPython.display
 
 logger = logging.getLogger(__name__)
+
+def has_converged(style_loss, content_loss):
+    return style_loss-content_loss < 1e+1 
 
 def run_style_transfer(
     content_path: Path, 
@@ -40,11 +44,12 @@ def run_style_transfer(
     amsgrad: bool = False, # Whether to apply AMSGrad variant of the optimizer
     content_weight: float = 1e3, 
     style_weight: float = 1e-2,
-    num_iterations: int = 1000,
+    num_iterations: Optional[int] = 1000,
     num_checkpoints: int = CHECKPOINTS_PER_RUN,
     output_folder: Path = OUTPUT_FOLDER,
     verbose: bool = False,
     log_images: bool = False,
+    max_iterations: int = 1000,
     ): 
 
     # Image and stats identifier form input parameters
@@ -99,7 +104,22 @@ def run_style_transfer(
     # ? What is this
     norm_means = np.array([103.939, 116.779, 123.68])
     min_vals = -norm_means
-    max_vals = 255 - norm_means   
+    max_vals = 255 - norm_means
+
+    # Max iterations
+    if num_iterations > max_iterations:
+        warnings.warn(
+            "num_iterations can't be greater than max_iterations. Setting "
+            f"num_iterations = {max_iterations}",
+            RuntimeWarning
+            )
+        num_iterations = max_iterations
+
+    # Convergence criteria
+    early_stop = False
+    if not num_iterations:
+        num_iterations = max_iterations
+        early_stop = True
 
     # Interval for checkpoints
     checkpoint_interval = num_iterations/(num_checkpoints)
@@ -149,6 +169,8 @@ def run_style_transfer(
                 stats.debug(stats_line)
             else:
                 stats.info(stats_line)
+            if early_stop and has_converged(style_score, content_score):
+                break
 
     except KeyboardInterrupt as e:
         logger.error('Keyboard Interrupt')
