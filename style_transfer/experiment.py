@@ -1,8 +1,10 @@
 from typing import List, Union, Optional
+from collections import  OrderedDict
 from pathlib import Path
 from PIL import Image
 from math import inf
 
+import shutil
 import logging
 import pandas as pd
 
@@ -40,21 +42,21 @@ TYPES = {
     NUM_ITERATIONS: int,
 }
 
-DEFAULTS = {
-    CONTENT: 'turtle', 
-    STYLE: 'kanagawa',
-    CONTENT_LAYERS: '1_B5_L2',
-    STYLE_LAYERS: '5_B12345_L11111',
-    PRE_TRAINING: True,
-    LEARNING_RATE: 5,
-    BETA_1: 0.99,
-    BETA_2: 0.999,
-    EPSILON: 1e-07,
-    AMSGRAD: False,
-    CONTENT_WEIGHT: 1e3, 
-    STYLE_WEIGHT: 1e-2,
-    NUM_ITERATIONS: 1000,
-}
+DEFAULTS = OrderedDict()
+DEFAULTS[CONTENT] = 'turtle'
+DEFAULTS[STYLE] = 'kanagawa'
+DEFAULTS[CONTENT_LAYERS] = '1_B5_L2'
+DEFAULTS[STYLE_LAYERS] = '5_B12345_L11111'
+DEFAULTS[PRE_TRAINING] = True
+DEFAULTS[LEARNING_RATE] = 5
+DEFAULTS[BETA_1] = 0.99
+DEFAULTS[BETA_2] = 0.999
+DEFAULTS[EPSILON] = 1e-07
+DEFAULTS[AMSGRAD] = False
+DEFAULTS[CONTENT_WEIGHT] = 1e3 
+DEFAULTS[STYLE_WEIGHT] = 1e-2
+DEFAULTS[NUM_ITERATIONS] = 1000
+DEFAULTS_KEYS = list(DEFAULTS.keys())
 
 def str2bool(string: str) -> bool:
     if string == "True":
@@ -230,16 +232,42 @@ class Experiment:
             raise ValueError(f'{self.folder} is not a valid experiment folder')
         return self._clean_folder(self.folder)
 
-    def _clean_folder(self, folder: Path):
+    def _clean_folder(self, folder: Path, depth=0):
         remove = True
         removefiles = [] # Files to remove without extension (Parameter names)
         for x in folder.iterdir():
             if x.is_dir():
-                remove = self._clean_folder(folder=x) and remove
+                continue
             elif x.suffix:
                 remove = False
             else:
                 removefiles.append(x)
+        # Check if it is missing a folder in the way
+        if removefiles:
+            parameter = removefiles[0].stem
+            try:
+                desired_parameter = DEFAULTS_KEYS[depth]
+                if parameter != desired_parameter:
+                    final_depth = DEFAULTS_KEYS.index(parameter, depth)
+                    for depth in range(depth,final_depth):
+                        key = DEFAULTS_KEYS[depth]
+                        foldername, _ = value2str(DEFAULTS[key])
+                        f = Path(folder, foldername)
+                        logger.info(f'Create intermediate folder {f}')
+                        f.mkdir()
+                        for x in folder.iterdir():
+                            if x != f:
+                                x.rename(Path(f, x.name))
+                        Path(folder, key).touch()
+                        folder = f
+            except IndexError:
+                logger.error(f'Too deep ({depth})! {folder}')
+            except ValueError:
+                logger.error(f'Parameter "{parameter}" not in {DEFAULTS_KEYS}')
+        # Check subfolders
+        for x in folder.iterdir():
+            if x.is_dir():
+                remove = self._clean_folder(folder=x, depth=depth+1) and remove
         if remove:
             [x.unlink() for x in removefiles] # Clean useless files
             folder.rmdir() # Folder should now be empty, we can remove it
