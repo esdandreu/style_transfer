@@ -23,7 +23,7 @@ import IPython.display
 logger = logging.getLogger(__name__)
 
 def has_converged(style_loss, content_loss):
-    return content_loss/style_loss > 0.95 
+    return content_loss/style_loss > 0.7
 
 def run_style_transfer(
     content_path: Path, 
