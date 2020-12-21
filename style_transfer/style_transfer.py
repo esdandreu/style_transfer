@@ -106,20 +106,19 @@ def run_style_transfer(
     min_vals = -norm_means
     max_vals = 255 - norm_means
 
+    # Convergence criteria
+    early_stop = False
+    if not num_iterations:
+        num_iterations = max_iterations
+        early_stop = True
     # Max iterations
-    if num_iterations > max_iterations:
+    elif num_iterations > max_iterations:
         warnings.warn(
             "num_iterations can't be greater than max_iterations. Setting "
             f"num_iterations = {max_iterations}",
             RuntimeWarning
             )
         num_iterations = max_iterations
-
-    # Convergence criteria
-    early_stop = False
-    if not num_iterations:
-        num_iterations = max_iterations
-        early_stop = True
 
     # Interval for checkpoints
     checkpoint_interval = num_iterations/(num_checkpoints)
