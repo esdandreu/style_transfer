@@ -52,7 +52,7 @@ DEFAULTS = {
     AMSGRAD: False,
     CONTENT_WEIGHT: 1e3, 
     STYLE_WEIGHT: 1e-2,
-    NUM_ITERATIONS: 1000,
+    NUM_ITERATIONS: '1000',
 }
 
 def str2bool(string: str) -> bool:
