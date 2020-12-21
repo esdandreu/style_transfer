@@ -52,7 +52,7 @@ DEFAULTS = {
     AMSGRAD: False,
     CONTENT_WEIGHT: 1e3, 
     STYLE_WEIGHT: 1e-2,
-    NUM_ITERATIONS: '1000',
+    NUM_ITERATIONS: 1000,
 }
 
 def str2bool(string: str) -> bool:
@@ -172,7 +172,7 @@ class Experiment:
             )
         for fun in [int, float, str2bool]:
             try:
-                options = [fun(x) for x in options]
+                options = [fun(x) if x is not None else None for x in options]
                 break
             except ValueError:
                 continue
