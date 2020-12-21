@@ -1,6 +1,7 @@
 from typing import List, Union, Optional
 from pathlib import Path
 from PIL import Image
+from math import inf
 
 import logging
 import pandas as pd
@@ -172,11 +173,11 @@ class Experiment:
             )
         for fun in [int, float, str2bool]:
             try:
-                options = [fun(x) if x is not None else None for x in options]
+                options = [fun(x) if x != 'None' else None for x in options]
                 break
             except ValueError:
                 continue
-        options.sort()
+        options.sort(key=lambda x: -inf if x is None else x)
         return options
 
     def _options(self, folder: Path, parameter: str, **kwargs) -> List[str]:
