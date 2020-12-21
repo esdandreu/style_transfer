@@ -50,6 +50,7 @@ def run_style_transfer(
     verbose: bool = False,
     log_images: bool = False,
     max_iterations: int = 1000,
+    save_image_in_checkpoints: bool = False,
     ): 
 
     # Image and stats identifier form input parameters
@@ -158,9 +159,11 @@ def run_style_transfer(
             
             # Save checkpoint image
             if i % checkpoint_interval == 0:
-                plot_img = init_image.numpy()
-                plot_img = deprocess_img(plot_img)
-                save_img(best_img,run_id,output_folder,iteration=i)
+                if save_image_in_checkpoints or log_images:
+                    plot_img = init_image.numpy()
+                    plot_img = deprocess_img(plot_img)
+                if save_image_in_checkpoints:
+                    save_img(best_img,run_id,output_folder,iteration=i)
                 if log_images:
                     IPython.display.display_png(Image.fromarray(plot_img))
                 stats.info(stats_line)
