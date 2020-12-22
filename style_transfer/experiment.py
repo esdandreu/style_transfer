@@ -26,22 +26,6 @@ CONTENT_WEIGHT = 'content_weight'
 STYLE_WEIGHT = 'style_weight'
 NUM_ITERATIONS = 'num_iterations'
 
-TYPES = {
-    CONTENT: str,
-    STYLE: str,
-    CONTENT_LAYERS: str,
-    STYLE_LAYERS: str,
-    PRE_TRAINING: bool,
-    LEARNING_RATE: float,
-    BETA_1: float,
-    BETA_2: float,
-    EPSILON: float,
-    AMSGRAD: bool,
-    CONTENT_WEIGHT: float,
-    STYLE_WEIGHT: float,
-    NUM_ITERATIONS: int,
-}
-
 DEFAULTS = OrderedDict()
 DEFAULTS[CONTENT] = 'turtle'
 DEFAULTS[STYLE] = 'kanagawa'
@@ -83,7 +67,8 @@ def value2str(value):
     return string, value
 
 def str2value(string):
-    for fun in [str2None, int, float, str2bool]:
+    # for fun in [str2None, int, float, str2bool]:
+    for fun in [int, float, str2bool]:
         try:
             return fun(string)
         except ValueError:
@@ -187,7 +172,7 @@ class Experiment:
             **kwargs
             )
         options = [str2value(x) for x in options]
-        options.sort(key=lambda x: -inf if x is None else x)
+        options.sort(key=lambda x: -inf if x in [None, "None"] else x)
         return options
 
     def _options(self, folder: Path, parameter: str, **kwargs) -> List[str]:
