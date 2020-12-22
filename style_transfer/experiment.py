@@ -7,7 +7,6 @@ from math import inf
 import shutil
 import logging
 import pandas as pd
-pd.options.plotting.backend = "plotly"
 
 from style_transfer.utils import layers_codename
 
