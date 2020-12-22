@@ -25,12 +25,12 @@ folder = Path('results', 'parameters_experiments')
 r = Experiment(folder)
 
 logger.info(f'{r.options(STYLE_WEIGHT, "turtle", "kanagawa") = }')
-logger.info(f'{r.options(CONTENT_LAYERS, "turtle", "kanagawa") = }')
-
+logger.info(f'{r.options("beta_1", "turtle", "kanagawa") = }')
+logger.info(f'{r.options("beta_2", "turtle", "kanagawa", beta_1=0.99) = }')
 logger.info(f'{r.output_folder("turtle", "kanagawa") = }')
 
-im = r.image("turtle", "kanagawa").show()
+# im = r.image("turtle", "kanagawa").show()
 
-fig = r.loss_plot("turtle", "kanagawa")
-fig.set_yscale('log')
-plt.show()
+# fig = r.loss_plot("turtle", "kanagawa")
+# fig.set_yscale('log')
+# plt.show()

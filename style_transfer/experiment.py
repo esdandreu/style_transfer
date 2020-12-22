@@ -65,6 +65,11 @@ def str2bool(string: str) -> bool:
         return False
     raise ValueError(f'Could not convert string "{string}" into bool')
 
+def str2None(string):
+    if string == "None":
+        return None
+    raise ValueError(f'{string} is not None')
+    
 def value2str(value):
     if isinstance(value, tuple):
         value = value[1]
@@ -76,6 +81,14 @@ def value2str(value):
     else:
         string = str(value)
     return string, value
+
+def str2value(string):
+    for fun in [str2None, int, float, str2bool]:
+        try:
+            return fun(string)
+        except ValueError:
+            continue
+    return string
 
 class Experiment:
     # _options = {}
@@ -173,12 +186,7 @@ class Experiment:
             parameter=parameter,
             **kwargs
             )
-        for fun in [int, float, str2bool]:
-            try:
-                options = [fun(x) if x != 'None' else None for x in options]
-                break
-            except ValueError:
-                continue
+        options = [str2value(x) for x in options]
         options.sort(key=lambda x: -inf if x is None else x)
         return options
 
