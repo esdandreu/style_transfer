@@ -274,28 +274,6 @@ class Experiment:
             logger.info(f'Removed folder = {folder}')
         return remove
 
-    def loss_plot(
-        self,
-        content_path: str, 
-        style_path: str,
-        content_layers: Union[List[str],str] = ['block5_conv2'],
-        style_layers: Union[List[str],str] = '5_B12345_L11111',
-        pre_training: bool = True,
-        learning_rate: float = 5,
-        beta_1: float = 0.99,
-        beta_2: float = 0.999,
-        epsilon: float = 1e-07,
-        amsgrad: bool = False,
-        content_weight: float = 1e3, 
-        style_weight: float = 1e-2,
-        num_iterations: int = 1000,
-        **kwargs
-        ):
-        df = self.loss(**{
-            k: v for k, v in locals().items() if k not in ['self', 'kwargs']
-            })
-        return df.plot(**kwargs)
-    
     def loss(
         self,
         content_path: str, 
@@ -318,6 +296,28 @@ class Experiment:
         filename = Path(folder, f'{content_path}_{style_path}.csv')
         return pd.read_csv(filename)
 
+    def loss_plot(
+        self,
+        content_path: str, 
+        style_path: str,
+        content_layers: Union[List[str],str] = ['block5_conv2'],
+        style_layers: Union[List[str],str] = '5_B12345_L11111',
+        pre_training: bool = True,
+        learning_rate: float = 5,
+        beta_1: float = 0.99,
+        beta_2: float = 0.999,
+        epsilon: float = 1e-07,
+        amsgrad: bool = False,
+        content_weight: float = 1e3, 
+        style_weight: float = 1e-2,
+        num_iterations: int = 1000,
+        **kwargs
+        ):
+        df = self.loss(**{
+            k: v for k, v in locals().items() if k not in ['self', 'kwargs']
+            })
+        return df[['loss', 'content_loss', 'style_loss']].plot(**kwargs)
+    
     def image(
         self,
         content_path: str, 
