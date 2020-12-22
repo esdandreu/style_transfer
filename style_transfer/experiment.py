@@ -315,7 +315,7 @@ class Experiment:
         folder = self.output_folder(
             **{k: v for k, v in locals().items() if k != 'self'}
             )
-        filename = f'{content_path}_{style_path}.csv'
+        filename = Path(folder, f'{content_path}_{style_path}.csv')
         return pd.read_csv(filename)
 
     def image(
